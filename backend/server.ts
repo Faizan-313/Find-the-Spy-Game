@@ -13,7 +13,7 @@ const server = createServer(app);
 
 // CORS configuration for frontend
 const corsOrigins = process.env.NODE_ENV === "production" 
-  ? [process.env.FRONTEND_URL || "https://your-vercel-app.vercel.app"]
+  ? [process.env.FRONTEND_URL || "https://find-the-spy-game.vercel.app"]
   : ["http://localhost:5173", "http://localhost:3000"];
 
 const io = new Server(server, {
