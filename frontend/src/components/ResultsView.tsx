@@ -69,7 +69,7 @@ export default function ResultsView({ room, roleInfo, resultData, isHost, curren
                         </div>
                         <div className="bg-black/30 px-6 py-3 rounded-lg">
                             <div className="text-xs opacity-75">Secret Word</div>
-                            <div className="text-2xl font-bold">{roleInfo.word}</div>
+                            <div className="text-6xl font-black">{roleInfo.word}</div>
                         </div>
                     </div>
                 )}
