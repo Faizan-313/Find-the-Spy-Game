@@ -1,5 +1,4 @@
-import React from "react";
-import type { Room, Player } from "../types/index";
+import type { Room } from "../types/index";
 
 interface Props {
     room: Room;
@@ -11,7 +10,7 @@ interface Props {
     onEndGame: () => void;
 }
 
-export default function ResultsView({ room, roleInfo, resultData, isHost, currentPlayerId, onNextRound, onEndGame }: Props) {
+export default function ResultsView({ room, roleInfo, resultData, isHost, onNextRound, onEndGame }: Props) {
     if (!resultData) return null;
 
     const spyUsername = resultData.spyUsername;
