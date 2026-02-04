@@ -2,16 +2,20 @@
   "name": "backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon --exec tsx server.ts",
     "start": "node dist/server.js",
-    "build": "tsc -b"
+    "build": "tsc -b",
+    "postbuild": "echo Build completed"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
+  "engines": {
+    "node": "18"
+  },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "nodemon": "^3.1.11",
