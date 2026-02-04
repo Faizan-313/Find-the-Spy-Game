@@ -3,10 +3,10 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import "dotenv/config";
 import { v4 as uuidv4 } from "uuid";
-import words from "./wordsPair"
+import words from "./wordsPair.js"
 
 
-import { Room, GamePhase, Player } from "./types/types";
+import { Room, GamePhase, Player } from "./types/types.js";
 
 const app = express();
 const server = createServer(app);

@@ -3,13 +3,25 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import "dotenv/config";
 import { v4 as uuidv4 } from "uuid";
-import words from "./wordsPair";
-import { GamePhase } from "./types/types";
+import words from "./wordsPair.js";
+import { GamePhase } from "./types/types.js";
 const app = express();
 const server = createServer(app);
-const io = new Server(server);
-const PORT = process.env.PORT || 3000;
+// CORS configuration for frontend
+const corsOrigins = process.env.NODE_ENV === "production"
+    ? [process.env.FRONTEND_URL || "https://your-vercel-app.vercel.app"]
+    : ["http://localhost:5173", "http://localhost:3000"];
+const io = new Server(server, {
+    cors: {
+        origin: corsOrigins,
+        methods: ["GET", "POST"]
+    }
+});
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const rooms = new Map();
+server.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
+});
 io.on("connection", (socket) => {
     socket.on("create-room", ({ username }) => {
         if (!username) {
@@ -265,7 +277,4 @@ io.on("connection", (socket) => {
             io.to(roomId).emit("room-updated", room);
         }
     });
-});
-server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
 });
