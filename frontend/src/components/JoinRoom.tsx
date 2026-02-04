@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Socket } from 'socket.io-client'
 
 interface JoinRoomProps {
-    socketRef: React.RefObject<Socket | null>
+    socketRef: React.MutableRefObject<Socket | null>
 }
 
 function JoinRoom({ socketRef }: JoinRoomProps) {

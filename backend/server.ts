@@ -3,6 +3,8 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import "dotenv/config";
 import { v4 as uuidv4 } from "uuid";
+import words from "./wordsPair"
+
 
 import { Room, GamePhase, Player } from "./types/types";
 
@@ -15,10 +17,8 @@ const PORT = process.env.PORT || 3000;
 const rooms = new Map<string, Room>();
 
 io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
 
     socket.on("create-room" , ({username})=>{
-        console.log("room created",socket.id, username)
         if(!username){
             socket.emit("room-error", { message: "Username required" })
             return
@@ -58,7 +58,8 @@ io.on("connection", (socket) => {
             return;
         }
 
-        if (room.phase !== GamePhase.LOBBY) {
+        // Allow starting a new round from LOBBY or after RESULTS (start next round)
+        if (room.phase !== GamePhase.LOBBY && room.phase !== GamePhase.RESULT) {
             socket.emit("room-error", { message: "Game already started" });
             return;
         }
@@ -106,7 +107,8 @@ io.on("connection", (socket) => {
             return;
         }
 
-        if (room.phase !== GamePhase.LOBBY) {
+        // Allow starting from LOBBY (initial game) or RESULT (next round)
+        if (room.phase !== GamePhase.LOBBY && room.phase !== GamePhase.RESULT) {
             socket.emit("room-error", { message: "Game already started" });
             return;
         }
@@ -114,13 +116,11 @@ io.on("connection", (socket) => {
         const phase = GamePhase.DISCUSSION
         room.phase = phase
 
-        const wordPairs: [string, string][] = [
-            ["Apple", "Banana"],
-            ["Beach", "Desert"],
-            ["Piano", "Guitar"],
-            ["Cat", "Dog"],
-            ["Rocket", "Satellite"],
-        ];
+        // clear previous per-round data
+        room.spyId = undefined;
+        room.secretWord = undefined;
+        room.spyWord = undefined;
+        room.results = {} as any;
 
         // assign spy randomly
         const players = room.players;
@@ -129,7 +129,7 @@ io.on("connection", (socket) => {
         room.spyId = spy.socketId;
 
         // choose words
-        const pair = wordPairs[Math.floor(Math.random() * wordPairs.length)];
+        const pair = words[Math.floor(Math.random() * words.length)];
         room.secretWord = pair[0];
         room.spyWord = pair[1];
 
@@ -269,6 +269,8 @@ io.on("connection", (socket) => {
             voteCounts: room.results,
             spyCaught,
             spyUsername,
+            spyWord: room.spyWord,
+            secretWord: room.secretWord,
             players: room.players,
         });
     })
@@ -288,12 +290,6 @@ io.on("connection", (socket) => {
             socket.emit("room-error", { message: "Only Host Can End The Game" });
             return;
         }
-
-        if (room.phase !== GamePhase.LOBBY) {
-            socket.emit("room-error", { message: "Can't do that" });
-            return;
-        }
-
         const deleted = rooms.delete(roomId)
         if(deleted){
             io.to(roomId).emit("room-deleted")
